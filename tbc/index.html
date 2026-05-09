@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.6</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.7</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -650,15 +650,15 @@
                     d = 'M'+sx+','+sy+' L'+sx+','+mid+' L'+ex+','+mid+' L'+ex+','+ey;
                 }
                 // Black border layer (drawn first, underneath)
-                blackPaths += '<path d="'+d+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="4.5"'
+                blackPaths += '<path d="'+d+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="7"'
                     + ' stroke-linecap="round" stroke-linejoin="round"/>';
                 // Colored layer on top, with arrowhead
-                colorPaths += '<path d="'+d+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="2.5"'
+                colorPaths += '<path d="'+d+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="4.5"'
                     + ' stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-'+tree+')"/>';
             });
-            svg.innerHTML = '<defs><marker id="ah-'+tree+'" markerWidth="7" markerHeight="7"'
-                + ' refX="7" refY="3.5" orient="auto">'
-                + '<path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(180,140,255,0.95)"/>'
+            svg.innerHTML = '<defs><marker id="ah-'+tree+'" markerWidth="5" markerHeight="5"'
+                + ' refX="5" refY="2.5" orient="auto">'
+                + '<path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(180,140,255,0.95)"/>'
                 + '</marker></defs>'
                 + blackPaths + colorPaths;
         }
