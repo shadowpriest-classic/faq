@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.9</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v2.0</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -628,21 +628,20 @@
                 var fR = fromEl.getBoundingClientRect();
                 var tR = toEl.getBoundingClientRect();
                 var dLine, dHeadB, dHeadC;
-                var OVR = 5;  // px the line starts inside the source icon
                 if (fc === tc) {
                     // Straight vertical (downward)
                     var sx = fR.left - gRect.left + fR.width / 2;
-                    var sy = fR.bottom - gRect.top - OVR;  // start inside source icon
+                    var sy = fR.bottom - gRect.top;          // flush at source cell bottom
                     var ex = tR.left - gRect.left + tR.width / 2;
-                    var ey = tR.top - gRect.top + AH;      // tip overlaps into dest icon
+                    var ey = tR.top - gRect.top;             // arrowhead tip at dest cell top
                     dLine  = 'M'+sx+','+sy+' L'+ex+','+(ey-AH);
                     dHeadB = 'M'+(ex-AWb)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AWb)+','+(ey-AH)+' Z';
                     dHeadC = 'M'+(ex-AW)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AW)+','+(ey-AH)+' Z';
                 } else if (fr === tr) {
                     // Straight horizontal (rightward)
-                    var sx = fR.right - gRect.left - OVR;  // start inside source icon
+                    var sx = fR.right - gRect.left;          // flush at source cell right
                     var sy = fR.top - gRect.top + fR.height / 2;
-                    var ex = tR.left - gRect.left + AH;    // tip overlaps into dest icon
+                    var ex = tR.left - gRect.left;           // arrowhead tip at dest cell left
                     var ey = sy;
                     dLine  = 'M'+sx+','+sy+' L'+(ex-AH)+','+ey;
                     dHeadB = 'M'+(ex-AH)+','+(ey-AWb)+' L'+ex+','+ey+' L'+(ex-AH)+','+(ey+AWb)+' Z';
@@ -650,9 +649,9 @@
                 } else {
                     // L-shape (last segment vertical, arrowhead points down)
                     var sx = fR.left - gRect.left + fR.width / 2;
-                    var sy = fR.bottom - gRect.top - OVR;  // start inside source icon
+                    var sy = fR.bottom - gRect.top;          // flush at source cell bottom
                     var ex = tR.left - gRect.left + tR.width / 2;
-                    var ey = tR.top - gRect.top + AH;      // tip overlaps into dest icon
+                    var ey = tR.top - gRect.top;             // arrowhead tip at dest cell top
                     var mid = (sy + ey) / 2;
                     dLine  = 'M'+sx+','+sy+' L'+sx+','+mid+' L'+ex+','+mid+' L'+ex+','+(ey-AH);
                     dHeadB = 'M'+(ex-AWb)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AWb)+','+(ey-AH)+' Z';
