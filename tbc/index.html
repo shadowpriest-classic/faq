@@ -72,7 +72,7 @@
         <!-- Tab Navigation -->
         <nav class="tab-navigation">
             <button class="tab-button active" data-tab="overview">
-                <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_priest_shadoworbs.jpg" alt="" class="tab-icon">
+                <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_shadowform.jpg" alt="" class="tab-icon">
                 <span>Overview</span>
             </button>
             <div class="tab-dropdown-wrapper">
@@ -86,6 +86,10 @@
                     <button class="tab-dropdown-item" onclick="navigateToSection('bis','bis-wowhead')">Wowhead Overview</button>
                 </div>
             </div>
+            <button class="tab-button" data-tab="talents">
+                <img src="https://wow.zamimg.com/images/wow/icons/large/classicon_priest.jpg" alt="" class="tab-icon">
+                <span>Talents</span>
+            </button>
             <button class="tab-button" data-tab="analyser">
                 <img src="https://wow.zamimg.com/images/wow/icons/large/inv_professions_inscription_scribesmagnifyingglass_gold.jpg" alt="" class="tab-icon">
                 <span>Analyser</span>
@@ -98,7 +102,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.0</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.1</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -218,6 +222,139 @@
                             </div>
                         </a>
                     </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Talents Tab -->
+        <div id="talents" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Talents</h2>
+
+                <div style="background: rgba(199, 125, 255, 0.08); border: 1px solid rgba(199, 125, 255, 0.35); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; color: #d9a8ff; font-size: 0.95rem; line-height: 1.7;">
+                    Unlike MoP's simplified talent system, TBC has three full talent trees: Discipline, Holy, and Shadow. As a DPS Shadow Priest you invest heavily in Shadow, with leftover points going into Discipline for utility and mana sustainability. The builds below are your starting points.
+                </div>
+
+                <!-- Build selector -->
+                <div style="display: flex; gap: 8px; margin-bottom: 28px;">
+                    <button id="build-btn-standard" onclick="setTbcBuild('standard')" style="flex: 1; padding: 10px 16px; border-radius: 8px; border: 2px solid rgba(82,183,136,0.6); background: rgba(82,183,136,0.15); color: #52b788; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; font-family: inherit;">Standard</button>
+                    <button id="build-btn-shadownova" onclick="setTbcBuild('shadownova')" style="flex: 1; padding: 10px 16px; border-radius: 8px; border: 2px solid rgba(199,125,255,0.25); background: transparent; color: #888; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; font-family: inherit;">Shadow Nova</button>
+                    <button id="build-btn-pvp" onclick="setTbcBuild('pvp')" style="flex: 1; padding: 10px 16px; border-radius: 8px; border: 2px solid rgba(199,125,255,0.25); background: transparent; color: #888; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; font-family: inherit;">PvP</button>
+                </div>
+
+                <!-- Build description -->
+                <div id="build-desc-standard" class="tbc-build-block">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">Your go-to raiding build. Heavy Shadow investment for maximum sustained DPS, with Discipline providing Meditation for mana regen and a handful of utility talents.</p>
+                </div>
+                <div id="build-desc-shadownova" class="tbc-build-block" style="display:none;">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">A variant that picks up Shadow Nova, trading a minor DPS talent for a strong AoE interrupt. Useful in encounters where a quick interrupt or AoE burst is needed.</p>
+                </div>
+                <div id="build-desc-pvp" class="tbc-build-block" style="display:none;">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 20px;">Built around survivability and crowd control. Takes Silence, Improved Vampiric Embrace, and Dispersion-adjacent tools. Less raw DPS but much harder to shut down.</p>
+                </div>
+
+                <!-- Three tree point distribution -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+
+                    <!-- Discipline -->
+                    <div style="background: rgba(168,218,220,0.07); border: 1px solid rgba(168,218,220,0.3); border-radius: 10px; padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_holy_wordfortitude.jpg" style="width: 28px; height: 28px; border-radius: 4px;">
+                            <span style="color: #a8dadc; font-weight: 600; font-size: 0.95rem;">Discipline</span>
+                        </div>
+                        <div id="dist-disc-standard" class="tbc-dist">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #a8dadc;" id="pts-disc-standard">14</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-disc-shadownova" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #a8dadc;">14</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-disc-pvp" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #a8dadc;">21</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                    </div>
+
+                    <!-- Holy -->
+                    <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); border-radius: 10px; padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_holy_holybolt.jpg" style="width: 28px; height: 28px; border-radius: 4px;">
+                            <span style="color: #ffd700; font-weight: 600; font-size: 0.95rem;">Holy</span>
+                        </div>
+                        <div id="dist-holy-standard" class="tbc-dist">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #ffd700;">0</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-holy-shadownova" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #ffd700;">0</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-holy-pvp" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #ffd700;">0</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                    </div>
+
+                    <!-- Shadow -->
+                    <div style="background: rgba(199,125,255,0.07); border: 1px solid rgba(199,125,255,0.3); border-radius: 10px; padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <img src="https://wow.zamimg.com/images/wow/icons/medium/spell_shadow_shadowform.jpg" style="width: 28px; height: 28px; border-radius: 4px;">
+                            <span style="color: #c77dff; font-weight: 600; font-size: 0.95rem;">Shadow</span>
+                        </div>
+                        <div id="dist-shadow-standard" class="tbc-dist">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #c77dff;">47</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-shadow-shadownova" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #c77dff;">47</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                        <div id="dist-shadow-pvp" class="tbc-dist" style="display:none;">
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #c77dff;">40</div>
+                            <div style="font-size: 0.75rem; color: #666; margin-top: 2px;">points</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Wowhead links per build -->
+                <div id="build-link-standard" class="tbc-build-block" style="margin-bottom: 24px;">
+                    <a href="#" target="_blank" style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(82,183,136,0.08); border: 1px solid rgba(82,183,136,0.4); border-radius: 10px; text-decoration: none;">
+                        <img src="https://wow.zamimg.com/images/wow/icons/medium/classicon_priest.jpg" style="width: 36px; height: 36px; border-radius: 6px;">
+                        <div>
+                            <div style="color: var(--primary-green); font-weight: 600;">Standard Build, Wowhead Talent Calculator</div>
+                            <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;">Link coming soon</div>
+                        </div>
+                    </a>
+                </div>
+                <div id="build-link-shadownova" class="tbc-build-block" style="display:none; margin-bottom: 24px;">
+                    <a href="#" target="_blank" style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(199,125,255,0.08); border: 1px solid rgba(199,125,255,0.35); border-radius: 10px; text-decoration: none;">
+                        <img src="https://wow.zamimg.com/images/wow/icons/medium/classicon_priest.jpg" style="width: 36px; height: 36px; border-radius: 6px;">
+                        <div>
+                            <div style="color: #c77dff; font-weight: 600;">Shadow Nova Build, Wowhead Talent Calculator</div>
+                            <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;">Link coming soon</div>
+                        </div>
+                    </a>
+                </div>
+                <div id="build-link-pvp" class="tbc-build-block" style="display:none; margin-bottom: 24px;">
+                    <a href="#" target="_blank" style="display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(88,101,242,0.08); border: 1px solid rgba(88,101,242,0.35); border-radius: 10px; text-decoration: none;">
+                        <img src="https://wow.zamimg.com/images/wow/icons/medium/classicon_priest.jpg" style="width: 36px; height: 36px; border-radius: 6px;">
+                        <div>
+                            <div style="color: #7b8ff7; font-weight: 600;">PvP Build, Wowhead Talent Calculator</div>
+                            <div style="color: #aaa; font-size: 0.85rem; margin-top: 2px;">Link coming soon</div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Flex points -->
+                <div class="subsection">
+                    <div class="subsection-title">
+                        <img src="https://wow.zamimg.com/images/wow/icons/medium/classicon_priest.jpg" alt="Flex Points" style="width: 32px; height: 32px;">
+                        Flex Points &amp; Situational Swaps
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 12px;">Explanation of flex points and situational swaps coming soon. This section will cover which talent points are negotiable and what you trade off by moving them.</p>
                 </div>
 
             </div>
@@ -343,6 +480,26 @@
         const initialTab = location.hash.replace('#', '');
         if (initialTab && document.getElementById(initialTab)) {
             activateTab(initialTab);
+        }
+
+        // TBC build selector
+        function setTbcBuild(build) {
+            var builds = ['standard', 'shadownova', 'pvp'];
+            var colors = { standard: 'rgba(82,183,136,0.6)', shadownova: 'rgba(199,125,255,0.6)', pvp: 'rgba(88,101,242,0.6)' };
+            var textColors = { standard: '#52b788', shadownova: '#c77dff', pvp: '#7b8ff7' };
+            builds.forEach(function(b) {
+                var btn = document.getElementById('build-btn-' + b);
+                var active = b === build;
+                btn.style.borderColor = active ? colors[b] : 'rgba(199,125,255,0.25)';
+                btn.style.background = active ? colors[b].replace('0.6)', '0.15)') : 'transparent';
+                btn.style.color = active ? textColors[b] : '#888';
+            });
+            document.querySelectorAll('.tbc-build-block').forEach(function(el) { el.style.display = 'none'; });
+            document.querySelectorAll('#build-desc-' + build + ', #build-link-' + build).forEach(function(el) { el.style.display = ''; });
+            document.querySelectorAll('.tbc-dist').forEach(function(el) { el.style.display = 'none'; });
+            document.querySelectorAll('[id$="-' + build + '"]').forEach(function(el) {
+                if (el.classList.contains('tbc-dist')) el.style.display = '';
+            });
         }
 
         // Discord member counter
