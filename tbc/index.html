@@ -60,7 +60,7 @@
         .tbc-tree-panel.holy{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2)}
         .tbc-tree-panel.shadow{background:rgba(199,125,255,.07);border:1px solid rgba(199,125,255,.3)}
         .tbc-tree-header{text-align:center;margin-bottom:8px;font-weight:700;font-size:.8rem;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
-        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,36px);gap:5px}
+        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,36px);gap:10px}
         .tt-cell{position:relative;border-radius:3px;overflow:visible;line-height:0;aspect-ratio:1/1;cursor:default}
         .tt-cell img{width:100%;display:block;border-radius:3px;transition:filter .2s}
         .tt-cell .tt-border{position:absolute;inset:0;border-radius:3px;pointer-events:none;z-index:1;border:1px solid rgba(255,255,255,.1)}
@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.5</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.6</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -502,8 +502,12 @@
                     // Row 9 (40 req)
                     [null, _t('Pain Suppression',1,_v+'24460350-f1c1-4e01-8fc0-dd77463d1b31/32ac880af4ffa4b2acb87d44159e4432.jpg'), null, null]
                 ],
-                // [fromRow,fromCol,toRow,toCol] -- Mental Strength -> Power Infusion
-                arrows: [[4,1,6,1]]
+                // [fromRow,fromCol,toRow,toCol]
+                arrows: [
+                    [2,2,4,2],  // Meditation -> Divine Spirit
+                    [4,2,4,3],  // Divine Spirit -> Imp. Divine Spirit (same row)
+                    [4,1,6,1]   // Mental Strength -> Power Infusion
+                ]
             },
             holy: {
                 grid: [
@@ -517,7 +521,10 @@
                     [null, _t('Empowered Healing',5,_v+'00903803-43d4-4e6e-81df-817ccdfbb37b/9ebbce1972c2eb28fdb3493e5db62858.jpg'), null, null],
                     [null, _t('Circle of Healing',1,_v+'9ea66671-e0de-43cc-8a4f-5d4a11998394/7c78193c3766b5ca7375266122d731dd.jpg'), null, null]
                 ],
-                arrows: []
+                arrows: [
+                    [1,2,3,2],  // Divine Fury -> Searing Light
+                    [4,1,6,1]   // Spirit of Redemption -> Lightwell
+                ]
             },
             shadow: {
                 grid: [
@@ -540,8 +547,13 @@
                     // Row 9 (40 req)
                     [null, _t('Vampiric Touch',1,_v+'bc11baae-f487-4c0c-a799-852587f229b2/e293cd4f3474bc684f2a55b7006e855e.jpg'), null, null]
                 ],
-                // Vampiric Embrace -> Vampiric Touch (confirmed TBC prereq)
-                arrows: [[4,1,8,1]]
+                // [fromRow,fromCol,toRow,toCol]
+                arrows: [
+                    [2,0,4,0],  // Imp. Psychic Scream -> Silence
+                    [4,1,4,2],  // Vampiric Embrace -> Imp. Vampiric Embrace (same row)
+                    [4,1,6,1],  // Vampiric Embrace -> Shadowform
+                    [6,1,8,1]   // Shadowform -> Vampiric Touch
+                ]
             }
         };
 
@@ -604,11 +616,8 @@
             if (!svg || !grid || !data.arrows || !data.arrows.length) return;
             var gRect = grid.getBoundingClientRect();
             if (!gRect.width) return;  // tab not yet visible; will re-draw on tab open
-            var cells = grid.children;  // 36 direct children (9 rows x 4 cols)
-            var svgContent = '<defs>'
-                + '<marker id="ah-' + tree + '" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">'
-                + '<path d="M0,0 L6,3 L0,6 Z" fill="rgba(180,140,255,0.9)"/>'
-                + '</marker></defs>';
+            var cells = grid.children;
+            var blackPaths = '', colorPaths = '';
             data.arrows.forEach(function(arr) {
                 var fr = arr[0], fc = arr[1], tr = arr[2], tc = arr[3];
                 var fromEl = cells[fr * 4 + fc];
@@ -616,24 +625,42 @@
                 if (!fromEl || !toEl) return;
                 var fR = fromEl.getBoundingClientRect();
                 var tR = toEl.getBoundingClientRect();
-                var sx = fR.left - gRect.left + fR.width  / 2;
-                var sy = fR.top  - gRect.top  + fR.height + 1;
-                var ex = tR.left - gRect.left + tR.width  / 2;
-                var ey = tR.top  - gRect.top  - 1;
-                var d;
-                if (Math.abs(sx - ex) < 2) {
-                    // Straight vertical -- offset x slightly to avoid overlapping intervening cells
-                    var ox = sx + fR.width * 0.38;
-                    d = 'M' + ox + ',' + sy + ' L' + ox + ',' + ey;
+                var sx, sy, ex, ey, d;
+                if (fc === tc) {
+                    // Same column: straight vertical
+                    sx = fR.left - gRect.left + fR.width / 2;
+                    sy = fR.bottom - gRect.top;
+                    ex = tR.left - gRect.left + tR.width / 2;
+                    ey = tR.top - gRect.top;
+                    d = 'M'+sx+','+sy+' L'+ex+','+ey;
+                } else if (fr === tr) {
+                    // Same row: straight horizontal
+                    sx = fR.right - gRect.left;
+                    sy = fR.top - gRect.top + fR.height / 2;
+                    ex = tR.left - gRect.left;
+                    ey = tR.top - gRect.top + tR.height / 2;
+                    d = 'M'+sx+','+sy+' L'+ex+','+ey;
                 } else {
-                    // L-shape: down to midpoint, across, then down
-                    var mid = sy + (ey - sy) * 0.45;
-                    d = 'M' + sx + ',' + sy + ' L' + sx + ',' + mid + ' L' + ex + ',' + mid + ' L' + ex + ',' + ey;
+                    // L-shape: down then across
+                    sx = fR.left - gRect.left + fR.width / 2;
+                    sy = fR.bottom - gRect.top;
+                    ex = tR.left - gRect.left + tR.width / 2;
+                    ey = tR.top - gRect.top;
+                    var mid = (sy + ey) / 2;
+                    d = 'M'+sx+','+sy+' L'+sx+','+mid+' L'+ex+','+mid+' L'+ex+','+ey;
                 }
-                svgContent += '<path d="' + d + '" fill="none" stroke="rgba(180,140,255,0.75)" stroke-width="3"'
-                    + ' stroke-dasharray="4,3" marker-end="url(#ah-' + tree + ')"/>';
+                // Black border layer (drawn first, underneath)
+                blackPaths += '<path d="'+d+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="4.5"'
+                    + ' stroke-linecap="round" stroke-linejoin="round"/>';
+                // Colored layer on top, with arrowhead
+                colorPaths += '<path d="'+d+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="2.5"'
+                    + ' stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-'+tree+')"/>';
             });
-            svg.innerHTML = svgContent;
+            svg.innerHTML = '<defs><marker id="ah-'+tree+'" markerWidth="7" markerHeight="7"'
+                + ' refX="7" refY="3.5" orient="auto">'
+                + '<path d="M0,0 L7,3.5 L0,7 Z" fill="rgba(180,140,255,0.95)"/>'
+                + '</marker></defs>'
+                + blackPaths + colorPaths;
         }
 
         function renderTbcTrees(build) {
