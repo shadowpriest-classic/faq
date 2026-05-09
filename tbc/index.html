@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v2.0</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v2.1</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -606,10 +606,25 @@
             grid.innerHTML = html;
             var ptsEl = document.getElementById('tt-pts-' + tree);
             if (ptsEl) ptsEl.textContent = totalPts + ' pts';
-            requestAnimationFrame(function() { renderArrows(tree); });
+            requestAnimationFrame(function() { renderArrows(tree, alloc); });
         }
 
-        function renderArrows(tree) {
+        // Returns how many points are spent in a specific grid cell (row, col)
+        function getCellPts(treeData, row, col, alloc) {
+            if (!alloc) return 1;
+            var idx = 0;
+            for (var r = 0; r < treeData.grid.length; r++) {
+                for (var c = 0; c < 4; c++) {
+                    if (treeData.grid[r][c] !== null) {
+                        if (r === row && c === col) return alloc[idx] || 0;
+                        idx++;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        function renderArrows(tree, alloc) {
             var data = TBC_TREES[tree];
             var svg  = document.getElementById('tt-svg-' + tree);
             var grid = document.getElementById('tt-grid-' + tree);
@@ -657,14 +672,18 @@
                     dHeadB = 'M'+(ex-AWb)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AWb)+','+(ey-AH)+' Z';
                     dHeadC = 'M'+(ex-AW)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AW)+','+(ey-AH)+' Z';
                 }
+                // Colour based on whether the destination talent has any points spent
+                var destPts = getCellPts(data, tr, tc, alloc);
+                var cStroke = destPts > 0 ? 'rgba(180,140,255,0.95)' : 'rgba(110,110,110,0.55)';
+                var cFill   = destPts > 0 ? 'rgba(180,140,255,0.95)' : 'rgba(110,110,110,0.55)';
                 // All black borders first (underneath everything)
                 blackPaths += '<path d="'+dLine+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="7"'
                     + ' stroke-linecap="round" stroke-linejoin="round"/>';
                 blackPaths += '<path d="'+dHeadB+'" fill="rgba(0,0,0,0.9)"/>';
                 // All colored on top
-                colorPaths += '<path d="'+dLine+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="4.5"'
+                colorPaths += '<path d="'+dLine+'" fill="none" stroke="'+cStroke+'" stroke-width="4.5"'
                     + ' stroke-linecap="round" stroke-linejoin="round"/>';
-                colorPaths += '<path d="'+dHeadC+'" fill="rgba(180,140,255,0.95)"/>';
+                colorPaths += '<path d="'+dHeadC+'" fill="'+cFill+'"/>';
             });
             svg.innerHTML = blackPaths + colorPaths;
         }
