@@ -60,21 +60,22 @@
         .tbc-tree-panel.holy{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2)}
         .tbc-tree-panel.shadow{background:rgba(199,125,255,.07);border:1px solid rgba(199,125,255,.3)}
         .tbc-tree-header{text-align:center;margin-bottom:8px;font-weight:700;font-size:.8rem;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
-        .tbc-tree-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-        .tt-cell{position:relative;border-radius:3px;overflow:visible;line-height:0;aspect-ratio:1/1}
+        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+        .tt-cell{position:relative;border-radius:3px;overflow:visible;line-height:0;aspect-ratio:1/1;cursor:default}
         .tt-cell img{width:100%;display:block;border-radius:3px;transition:filter .2s}
         .tt-cell .tt-border{position:absolute;inset:0;border-radius:3px;pointer-events:none;z-index:1;border:1px solid rgba(255,255,255,.1)}
-        .tt-cell .tt-badge{position:absolute;bottom:1px;right:2px;font-size:8px;font-weight:700;color:#666;text-shadow:0 1px 3px #000,0 0 2px #000;line-height:1;pointer-events:none;z-index:2}
-        .tt-cell.tt-active .tt-border{border:2px solid #ffd700;box-shadow:0 0 6px rgba(255,215,0,.5),inset 0 0 4px rgba(255,215,0,.12)}
+        .tt-cell .tt-badge{position:absolute;bottom:1px;right:1px;font-size:7px;font-weight:700;color:#666;text-shadow:0 1px 3px #000,0 0 2px #000;line-height:1;pointer-events:none;z-index:2}
+        .tt-cell.tt-active .tt-border{border:2px solid #ffd700;box-shadow:0 0 5px rgba(255,215,0,.5),inset 0 0 3px rgba(255,215,0,.12)}
         .tt-cell.tt-active .tt-badge{color:#fff}
         .tt-cell.tt-partial .tt-border{border:2px solid rgba(255,150,30,.7)}
         .tt-cell.tt-partial .tt-badge{color:#ffb347}
         .tt-cell.tt-inactive img{filter:brightness(.22) saturate(.06)}
         .tt-cell.tt-inactive .tt-badge{color:#383838}
         .tt-cell.tt-empty{visibility:hidden;pointer-events:none}
-        .tt-wrap{position:relative}
-        .tt-wrap:hover .tt-tip{display:block}
+        .tt-cell:hover .tt-tip{display:block}
         .tt-tip{display:none;position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:#1a1c2a;border:1px solid rgba(199,125,255,.4);border-radius:6px;padding:5px 9px;white-space:nowrap;font-size:.72rem;color:#d9a8ff;z-index:200;pointer-events:none;font-family:inherit;line-height:1.5;text-align:center}
+        .tt-grid-wrap{position:relative}
+        .tt-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:5}
     </style>
 </head>
 <body>
@@ -124,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.2</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.3</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -280,15 +281,24 @@
                 <div class="tbc-talent-tree" id="tbc-talent-tree">
                     <div class="tbc-tree-panel disc">
                         <div class="tbc-tree-header" style="color:#a8dadc;">Discipline <span id="tt-pts-disc" style="font-weight:400;color:#557a7c;font-size:.72rem;"></span></div>
-                        <div class="tbc-tree-grid" id="tt-grid-disc"></div>
+                        <div class="tt-grid-wrap">
+                            <div class="tbc-tree-grid" id="tt-grid-disc"></div>
+                            <svg id="tt-svg-disc" class="tt-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        </div>
                     </div>
                     <div class="tbc-tree-panel holy">
                         <div class="tbc-tree-header" style="color:#ffd700;">Holy <span id="tt-pts-holy" style="font-weight:400;color:#7a6800;font-size:.72rem;"></span></div>
-                        <div class="tbc-tree-grid" id="tt-grid-holy"></div>
+                        <div class="tt-grid-wrap">
+                            <div class="tbc-tree-grid" id="tt-grid-holy"></div>
+                            <svg id="tt-svg-holy" class="tt-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        </div>
                     </div>
                     <div class="tbc-tree-panel shadow">
                         <div class="tbc-tree-header" style="color:#c77dff;">Shadow <span id="tt-pts-shadow" style="font-weight:400;color:#7a3eaa;font-size:.72rem;"></span></div>
-                        <div class="tbc-tree-grid" id="tt-grid-shadow"></div>
+                        <div class="tt-grid-wrap">
+                            <div class="tbc-tree-grid" id="tt-grid-shadow"></div>
+                            <svg id="tt-svg-shadow" class="tt-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+                        </div>
                     </div>
                 </div>
 
@@ -455,133 +465,95 @@
             activateTab(initialTab);
         }
 
-        // ── TBC Talent Tree Data ──
+        // ── TBC Talent Tree Data (4-column grid, exact wowhead layout) ──
         var _W = 'https://www.wowisclassic.com/media/CACHE/images/wow/';
+        // Helper: [name, maxRank, iconUrl]
+        function _t(n,m,p){return[n,m,_W+p];}
+        var _d='tbc-talents/', _v='talents/';
+
+        // Each tree defined as a 2D grid: 9 rows x 4 cols, null = empty slot.
+        // Reading order of non-null cells (L->R, T->B) matches wowhead URL encoding.
         var TBC_TREES = {
             disc: {
-                name: 'Discipline', ptColor: '#a8dadc',
-                talents: [
+                grid: [
                     // Row 1 (0 req)
-                    ['Unbreakable Will',5,_W+'tbc-talents/ed1b5965-abb1-478e-ac96-02644971c1ea/572c3d9d1145bc087797535bff032d67.jpg'],
-                    ['Wand Specialization',5,_W+'tbc-talents/41ef3fcd-de20-431b-aa6c-76c34f78d4a0/fed286da1a9dd2531d51f2e5cc74d7cf.jpg'],
-                    ['Silent Resolve',5,_W+'tbc-talents/87992556-da83-41fc-b5c6-63f3cbeb0d46/5d72db22a51c20ed73b9578dab3f23ae.jpg'],
+                    [null, _t('Unbreakable Will',5,_d+'ed1b5965-abb1-478e-ac96-02644971c1ea/572c3d9d1145bc087797535bff032d67.jpg'), _t('Wand Specialization',5,_d+'41ef3fcd-de20-431b-aa6c-76c34f78d4a0/fed286da1a9dd2531d51f2e5cc74d7cf.jpg'), null],
                     // Row 2 (5 req)
-                    ['Imp. Power Word: Fortitude',2,_W+'tbc-talents/42678ddf-2f11-4370-a063-c4a4a365a93d/c3a872a7dd975eba47f7a9d3c8e67b5a.jpg'],
-                    ['Imp. Power Word: Shield',3,_W+'tbc-talents/d7081668-ce49-4d90-9a11-ca73a9e97c69/76a60229e5d32b193fa5dff4f19506f9.jpg'],
-                    ['Martyrdom',2,_W+'tbc-talents/85868104-0812-4b98-934f-7bdb6b49dc46/8859b9041dfcfdef9e3d64764bc228a6.jpg'],
+                    [_t('Silent Resolve',5,_d+'87992556-da83-41fc-b5c6-63f3cbeb0d46/5d72db22a51c20ed73b9578dab3f23ae.jpg'), _t('Imp. PW: Fortitude',2,_d+'42678ddf-2f11-4370-a063-c4a4a365a93d/c3a872a7dd975eba47f7a9d3c8e67b5a.jpg'), _t('Imp. PW: Shield',3,_d+'d7081668-ce49-4d90-9a11-ca73a9e97c69/76a60229e5d32b193fa5dff4f19506f9.jpg'), _t('Martyrdom',2,_d+'85868104-0812-4b98-934f-7bdb6b49dc46/8859b9041dfcfdef9e3d64764bc228a6.jpg')],
                     // Row 3 (10 req)
-                    ['Absolution',3,_W+'talents/05e54b53-8733-4edf-8a1f-7c465560e5fa/d8bb8757913f1c806b27b5dfd7d74126.jpg'],
-                    ['Inner Focus',1,_W+'tbc-talents/b82b6def-e052-4e18-ba71-2e97a82d691e/ba9a80e20f1f809cd90f960ae2a28a62.jpg'],
-                    ['Meditation',3,_W+'tbc-talents/16e06886-94ff-4d6c-b3e4-363003471ad0/f3f833460f27d76b8bca04d9e3d7e06a.jpg'],
+                    [_t('Absolution',3,_v+'05e54b53-8733-4edf-8a1f-7c465560e5fa/d8bb8757913f1c806b27b5dfd7d74126.jpg'), _t('Inner Focus',1,_d+'b82b6def-e052-4e18-ba71-2e97a82d691e/ba9a80e20f1f809cd90f960ae2a28a62.jpg'), _t('Meditation',3,_d+'16e06886-94ff-4d6c-b3e4-363003471ad0/f3f833460f27d76b8bca04d9e3d7e06a.jpg'), null],
                     // Row 4 (15 req)
-                    ['Imp. Inner Fire',3,_W+'tbc-talents/b14fdac3-3b40-464d-83ef-68641f398489/0017e74647cfd7b293f753bcd0623322.jpg'],
-                    ['Mental Agility',5,_W+'tbc-talents/de978bee-38e3-4675-bff7-14e6e2a9085a/92fe52b1046f7a8741b162014230198d.jpg'],
-                    ['Imp. Mana Burn',2,_W+'tbc-talents/8493acea-abe9-45c0-9a94-b0ffc28b320a/4c8d6cccc5cfbc15dc94d972e55cb176.jpg'],
+                    [_t('Imp. Inner Fire',3,_d+'b14fdac3-3b40-464d-83ef-68641f398489/0017e74647cfd7b293f753bcd0623322.jpg'), _t('Mental Agility',5,_d+'de978bee-38e3-4675-bff7-14e6e2a9085a/92fe52b1046f7a8741b162014230198d.jpg'), null, _t('Imp. Mana Burn',2,_d+'8493acea-abe9-45c0-9a94-b0ffc28b320a/4c8d6cccc5cfbc15dc94d972e55cb176.jpg')],
                     // Row 5 (20 req)
-                    ['Mental Strength',5,_W+'tbc-talents/9258275e-dd83-4b3f-a88b-4b343692e850/45588fbe5d28860b5d5b551aa9207c1a.jpg'],
-                    ['Divine Spirit',1,_W+'tbc-talents/9a0262de-28df-4d69-8ea1-cf2208906061/75a31b2777206180c4303fb2093f3d34.jpg'],
-                    ['Imp. Divine Spirit',2,_W+'talents/ef7127f1-540d-4c38-bc61-11add67c2c49/ea40d5b027d8d309d68dd76cb875bc48.jpg'],
+                    [null, _t('Mental Strength',5,_d+'9258275e-dd83-4b3f-a88b-4b343692e850/45588fbe5d28860b5d5b551aa9207c1a.jpg'), _t('Divine Spirit',1,_d+'9a0262de-28df-4d69-8ea1-cf2208906061/75a31b2777206180c4303fb2093f3d34.jpg'), _t('Imp. Divine Spirit',2,_v+'ef7127f1-540d-4c38-bc61-11add67c2c49/ea40d5b027d8d309d68dd76cb875bc48.jpg')],
                     // Row 6 (25 req)
-                    ['Focused Power',2,_W+'talents/298bae90-5b1d-4734-97ab-f28196786c94/10c73b85a20e14002ead5f10ed6938ce.jpg'],
-                    ['Force of Will',5,_W+'tbc-talents/9804c989-9e05-4b70-9275-3dec24bcc4bc/2aaeb7282ba7e7cc8005324a4e09fb4d.jpg'],
-                    ['Focused Will',3,_W+'talents/b0e87aa0-9395-4a38-bc9e-ff36185ea8a6/c58546204e1ea2160b68730f11d73e63.jpg'],
+                    [_t('Focused Power',2,_v+'298bae90-5b1d-4734-97ab-f28196786c94/10c73b85a20e14002ead5f10ed6938ce.jpg'), null, _t('Force of Will',5,_d+'9804c989-9e05-4b70-9275-3dec24bcc4bc/2aaeb7282ba7e7cc8005324a4e09fb4d.jpg'), null],
                     // Row 7 (30 req)
-                    ['Power Infusion',1,_W+'tbc-talents/bda591e2-8045-459f-b3bc-63fafc4ae3ca/e653700a69463b853afdb8edeb583c2a.jpg'],
-                    ['Reflective Shield',5,_W+'talents/13f84296-b946-4afa-b160-0006db45169a/f1f4cc6557be93662c7865869dd38fbe.jpg'],
-                    ['Enlightenment',5,_W+'talents/81576c48-387a-4d6e-9509-3951ecae80ec/424b4c1faae8ab1c110401dcf550e2c6.jpg'],
-                    // Row 8 (35 req): Pain Suppression is col 2 of row 8
-                    ['(empty)',0,null],
-                    ['Pain Suppression',1,_W+'talents/24460350-f1c1-4e01-8fc0-dd77463d1b31/32ac880af4ffa4b2acb87d44159e4432.jpg'],
-                    ['(empty)',0,null]
-                ]
+                    [_t('Focused Will',3,_v+'b0e87aa0-9395-4a38-bc9e-ff36185ea8a6/c58546204e1ea2160b68730f11d73e63.jpg'), _t('Power Infusion',1,_d+'bda591e2-8045-459f-b3bc-63fafc4ae3ca/e653700a69463b853afdb8edeb583c2a.jpg'), _t('Reflective Shield',5,_v+'13f84296-b946-4afa-b160-0006db45169a/f1f4cc6557be93662c7865869dd38fbe.jpg'), null],
+                    // Row 8 (35 req)
+                    [null, _t('Enlightenment',5,_v+'81576c48-387a-4d6e-9509-3951ecae80ec/424b4c1faae8ab1c110401dcf550e2c6.jpg'), null, null],
+                    // Row 9 (40 req)
+                    [null, _t('Pain Suppression',1,_v+'24460350-f1c1-4e01-8fc0-dd77463d1b31/32ac880af4ffa4b2acb87d44159e4432.jpg'), null, null]
+                ],
+                // [fromRow,fromCol,toRow,toCol] -- Divine Spirit -> Power Infusion
+                arrows: [[4,2,6,1]]
             },
             holy: {
-                name: 'Holy', ptColor: '#ffd700',
-                talents: [
-                    // Row 1
-                    ['Healing Focus',2,_W+'tbc-talents/c08c4ad4-2cbc-4bf6-bc17-43bc448ff1a2/6e0c154dc8ba9f9990b276030ec2678b.jpg'],
-                    ['Improved Renew',3,_W+'tbc-talents/1235b98b-9a21-4dac-989b-336b32c4c74d/e2b76d7f53c22037f84f09e809744fd3.jpg'],
-                    ['Holy Specialization',5,_W+'tbc-talents/4d9e7d4f-9728-4a3b-9ee5-31f080b59c09/5bf92117f7a7be3eb44dd8d6c8929958.jpg'],
-                    // Row 2
-                    ['Spell Warding',5,_W+'tbc-talents/a91c12e6-0fbc-4543-8b22-30455f8de354/31ce34a4cff49052dbbe66d15af4b9d4.jpg'],
-                    ['Divine Fury',5,_W+'tbc-talents/c323f577-5171-4160-8907-69cc7cddbdfb/066bfb8ce284697fcd7c2218e4379050.jpg'],
-                    ['Holy Nova',1,_W+'tbc-talents/fa0b3921-f4ae-4aa3-935f-3608e605bb91/87bcad0de8933425ff47524e169bb260.jpg'],
-                    // Row 3
-                    ['Blessed Recovery',3,_W+'tbc-talents/7f5e039d-11af-46b2-9385-1089992c2481/3d6f829181b9c841923f06bcaab7d4b6.jpg'],
-                    ['Inspiration',3,_W+'tbc-talents/be22768d-137c-4d43-8005-2f0dc6a79714/aeb3cd35883298cf1cd31fb5b2b47edd.jpg'],
-                    ['Holy Reach',2,_W+'tbc-talents/19826ff6-6685-418c-94ad-4ed50d46577e/51897bac56862c5680361d24b88e6e69.jpg'],
-                    // Row 4
-                    ['Improved Healing',3,_W+'tbc-talents/2f8d92f8-6384-4b9c-90f5-adf55bbadb82/3b27c1e3c2644b0f5a4aed87d5be4b36.jpg'],
-                    ['Searing Light',2,_W+'tbc-talents/d1aef0b3-6c73-49de-ab3b-3765ca716a2d/59e4a249d93a95937a6a8b46d14cd176.jpg'],
-                    ['Imp. Prayer of Healing',2,_W+'tbc-talents/bee1b3fa-8e0d-4df5-9100-396ef9b3955c/08f0a85b0ff56b93afc400c12530f318.jpg'],
-                    // Row 5
-                    ['Spirit of Redemption',1,_W+'tbc-talents/11b1f4a7-7533-4629-8d1a-6d59532cd1ab/9477f5eda48e3a6b843ef311a6816aac.jpg'],
-                    ['Spiritual Guidance',5,_W+'tbc-talents/95a45412-56ad-47e2-9283-2d9140d8448d/78d10484e741ef36d19d79bfc56d992b.jpg'],
-                    ['Surge of Light',2,_W+'talents/28e288ab-2e17-49cf-9b81-9dd7aaf91092/27c36a5c65fc11878b0fd446ba59d449.jpg'],
-                    // Row 6
-                    ['Spiritual Healing',5,_W+'tbc-talents/d375d757-fb7d-4d1a-a864-6a70d5ed5946/58c056d980ba9f389cac61bf7cf680cc.jpg'],
-                    ['Holy Concentration',3,_W+'talents/a6c362a7-72ca-4a43-ad49-dc23bbc3b722/06f0fd31f2e909c4b498c5100a5866a4.jpg'],
-                    ['Lightwell',1,_W+'tbc-talents/b3f12552-3979-488e-9bcc-65175e810ad6/de6abea52a0a45d93cb7bd44605b3b17.jpg'],
-                    // Row 7
-                    ['Blessed Resilience',3,_W+'talents/f247d635-4abe-4fe2-b918-fe31448b9d5f/e2773a673ece663fa43336fa1d8a292c.jpg'],
-                    ['Empowered Healing',5,_W+'talents/00903803-43d4-4e6e-81df-817ccdfbb37b/9ebbce1972c2eb28fdb3493e5db62858.jpg'],
-                    ['Circle of Healing',1,_W+'talents/9ea66671-e0de-43cc-8a4f-5d4a11998394/7c78193c3766b5ca7375266122d731dd.jpg']
-                ]
+                grid: [
+                    [_t('Healing Focus',2,_d+'c08c4ad4-2cbc-4bf6-bc17-43bc448ff1a2/6e0c154dc8ba9f9990b276030ec2678b.jpg'), _t('Improved Renew',3,_d+'1235b98b-9a21-4dac-989b-336b32c4c74d/e2b76d7f53c22037f84f09e809744fd3.jpg'), _t('Holy Specialization',5,_d+'4d9e7d4f-9728-4a3b-9ee5-31f080b59c09/5bf92117f7a7be3eb44dd8d6c8929958.jpg'), null],
+                    [null, _t('Spell Warding',5,_d+'a91c12e6-0fbc-4543-8b22-30455f8de354/31ce34a4cff49052dbbe66d15af4b9d4.jpg'), _t('Divine Fury',5,_d+'c323f577-5171-4160-8907-69cc7cddbdfb/066bfb8ce284697fcd7c2218e4379050.jpg'), null],
+                    [_t('Holy Nova',1,_d+'fa0b3921-f4ae-4aa3-935f-3608e605bb91/87bcad0de8933425ff47524e169bb260.jpg'), _t('Blessed Recovery',3,_d+'7f5e039d-11af-46b2-9385-1089992c2481/3d6f829181b9c841923f06bcaab7d4b6.jpg'), null, _t('Inspiration',3,_d+'be22768d-137c-4d43-8005-2f0dc6a79714/aeb3cd35883298cf1cd31fb5b2b47edd.jpg')],
+                    [_t('Holy Reach',2,_d+'19826ff6-6685-418c-94ad-4ed50d46577e/51897bac56862c5680361d24b88e6e69.jpg'), _t('Improved Healing',3,_d+'2f8d92f8-6384-4b9c-90f5-adf55bbadb82/3b27c1e3c2644b0f5a4aed87d5be4b36.jpg'), _t('Searing Light',2,_d+'d1aef0b3-6c73-49de-ab3b-3765ca716a2d/59e4a249d93a95937a6a8b46d14cd176.jpg'), null],
+                    [_t('Imp. Prayer of Healing',2,_d+'bee1b3fa-8e0d-4df5-9100-396ef9b3955c/08f0a85b0ff56b93afc400c12530f318.jpg'), _t('Spirit of Redemption',1,_d+'11b1f4a7-7533-4629-8d1a-6d59532cd1ab/9477f5eda48e3a6b843ef311a6816aac.jpg'), _t('Spiritual Guidance',5,_d+'95a45412-56ad-47e2-9283-2d9140d8448d/78d10484e741ef36d19d79bfc56d992b.jpg'), null],
+                    [_t('Surge of Light',2,_v+'28e288ab-2e17-49cf-9b81-9dd7aaf91092/27c36a5c65fc11878b0fd446ba59d449.jpg'), null, _t('Spiritual Healing',5,_d+'d375d757-fb7d-4d1a-a864-6a70d5ed5946/58c056d980ba9f389cac61bf7cf680cc.jpg'), null],
+                    [_t('Holy Concentration',3,_v+'a6c362a7-72ca-4a43-ad49-dc23bbc3b722/06f0fd31f2e909c4b498c5100a5866a4.jpg'), _t('Lightwell',1,_d+'b3f12552-3979-488e-9bcc-65175e810ad6/de6abea52a0a45d93cb7bd44605b3b17.jpg'), _t('Blessed Resilience',3,_v+'f247d635-4abe-4fe2-b918-fe31448b9d5f/e2773a673ece663fa43336fa1d8a292c.jpg'), null],
+                    [null, _t('Empowered Healing',5,_v+'00903803-43d4-4e6e-81df-817ccdfbb37b/9ebbce1972c2eb28fdb3493e5db62858.jpg'), null, null],
+                    [null, _t('Circle of Healing',1,_v+'9ea66671-e0de-43cc-8a4f-5d4a11998394/7c78193c3766b5ca7375266122d731dd.jpg'), null, null]
+                ],
+                arrows: []
             },
             shadow: {
-                name: 'Shadow', ptColor: '#c77dff',
-                talents: [
-                    // Row 1
-                    ['Spirit Tap',5,_W+'tbc-talents/610c5b3a-0b64-4031-95b1-47657a287cf3/c64b86555ef4ffe0f60ea60a827e0a23.jpg'],
-                    ['Blackout',5,_W+'tbc-talents/c5f4eae7-2afe-4d2e-ad10-c156663f51f3/293460d55200af28f04cb312b7ab8652.jpg'],
-                    ['Shadow Affinity',3,_W+'tbc-talents/56690cde-650a-44a6-870a-b54e64580281/043eacc629ddc03e05976d64552fdf38.jpg'],
-                    // Row 2
-                    ['Imp. Shadow Word: Pain',2,_W+'tbc-talents/f9449371-f00f-40f1-8e48-d3aa87bfa951/c47eb9e40a3243121e2de3ff57cb74fe.jpg'],
-                    ['Shadow Focus',5,_W+'tbc-talents/a040612e-f780-49a9-b95b-785078cd512d/a89a7b4b0fb34f5ea06b946117dfe8fa.jpg'],
-                    ['Imp. Psychic Scream',2,_W+'tbc-talents/e06cdbc2-90f9-42c5-b67f-c8ee88e93ea6/6b07ff53292920256abb6f6eacad4a1a.jpg'],
-                    // Row 3
-                    ['Imp. Mind Blast',5,_W+'tbc-talents/0ea37499-3de9-4e31-bf5a-d23d1eaa8885/4ec71693036c5cb0319a8cda7cd7374a.jpg'],
-                    ['Mind Flay',1,_W+'tbc-talents/f27749f4-105d-4b69-9288-4166529c1d8e/abf4092cefc1ca81ddbcda2ad3e29b7f.jpg'],
-                    ['Improved Fade',2,_W+'tbc-talents/0d2c4e42-5f00-42fd-b882-f0f44951fdfb/2165a164c2ed779b1381f2fc6f7aab3d.jpg'],
-                    // Row 4
-                    ['Shadow Reach',2,_W+'tbc-talents/492f813f-93bc-49bb-8393-48cbb459135d/0756940eb50017b2300f035e26b56fcd.jpg'],
-                    ['Shadow Weaving',5,_W+'tbc-talents/794f716c-eec7-42a9-bf03-e4aff2e49b75/9a8f321ee39963965303eddcdae67c39.jpg'],
-                    ['Silence',1,_W+'tbc-talents/31b524ad-e465-41b9-ae98-50df79607db4/493c81e4343bdc9df162a6672fca6b22.jpg'],
-                    // Row 5
-                    ['Vampiric Embrace',1,_W+'tbc-talents/ae119016-40e8-40e3-8374-2f5494e561d4/679f15fcf1096af13b4157af46007f40.jpg'],
-                    ['Imp. Vampiric Embrace',2,_W+'tbc-talents/4c966a6e-2d65-4162-8b34-47406e8aba74/d4a409edcb0d6e6468bc93a2f32d0cd2.jpg'],
-                    ['Focused Mind',3,_W+'talents/cf69e3a4-1ef9-4b1a-aa7c-83f04dab31e3/6860af2b0a4d4c30ec65c06964b2019d.jpg'],
-                    // Row 6
-                    ['Shadow Resilience',2,_W+'talents/00fc644f-cb1b-4503-ab06-ba1113d4c315/ac3deccfedb9cff4996daeb85550f3aa.jpg'],
-                    ['Darkness',5,_W+'tbc-talents/0a33ab45-348c-452b-a49c-20efe42078c0/a013092f715b04daee22ff1d530c229b.jpg'],
-                    ['Shadowform',1,_W+'tbc-talents/df37622d-7b28-4b01-b04c-34f050794ddd/8f8d981596737eb6b2d8b05c722029ab.jpg'],
-                    // Row 7
-                    ['Shadow Power',5,_W+'talents/c2f9305d-cedc-429c-a740-b355be56ae48/5b1cbce68f7f635090883522d19007e4.jpg'],
-                    ['Misery',5,_W+'talents/0928cb01-55db-45db-8116-304b6fb3efb4/5ecd182c7d743c246eb1f6cfe5d8ce4c.jpg'],
-                    ['Vampiric Touch',1,_W+'talents/bc11baae-f487-4c0c-a799-852587f229b2/e293cd4f3474bc684f2a55b7006e855e.jpg']
-                ]
+                grid: [
+                    // Row 1 (0 req)
+                    [null, _t('Spirit Tap',5,_d+'610c5b3a-0b64-4031-95b1-47657a287cf3/c64b86555ef4ffe0f60ea60a827e0a23.jpg'), _t('Blackout',5,_d+'c5f4eae7-2afe-4d2e-ad10-c156663f51f3/293460d55200af28f04cb312b7ab8652.jpg'), null],
+                    // Row 2 (5 req)
+                    [_t('Shadow Affinity',3,_d+'56690cde-650a-44a6-870a-b54e64580281/043eacc629ddc03e05976d64552fdf38.jpg'), _t('Imp. Shadow Word: Pain',2,_d+'f9449371-f00f-40f1-8e48-d3aa87bfa951/c47eb9e40a3243121e2de3ff57cb74fe.jpg'), _t('Shadow Focus',5,_d+'a040612e-f780-49a9-b95b-785078cd512d/a89a7b4b0fb34f5ea06b946117dfe8fa.jpg'), null],
+                    // Row 3 (10 req)
+                    [_t('Imp. Psychic Scream',2,_d+'e06cdbc2-90f9-42c5-b67f-c8ee88e93ea6/6b07ff53292920256abb6f6eacad4a1a.jpg'), _t('Imp. Mind Blast',5,_d+'0ea37499-3de9-4e31-bf5a-d23d1eaa8885/4ec71693036c5cb0319a8cda7cd7374a.jpg'), _t('Mind Flay',1,_d+'f27749f4-105d-4b69-9288-4166529c1d8e/abf4092cefc1ca81ddbcda2ad3e29b7f.jpg'), null],
+                    // Row 4 (15 req)
+                    [null, _t('Improved Fade',2,_d+'0d2c4e42-5f00-42fd-b882-f0f44951fdfb/2165a164c2ed779b1381f2fc6f7aab3d.jpg'), _t('Shadow Reach',2,_d+'492f813f-93bc-49bb-8393-48cbb459135d/0756940eb50017b2300f035e26b56fcd.jpg'), _t('Shadow Weaving',5,_d+'794f716c-eec7-42a9-bf03-e4aff2e49b75/9a8f321ee39963965303eddcdae67c39.jpg')],
+                    // Row 5 (20 req)
+                    [_t('Silence',1,_d+'31b524ad-e465-41b9-ae98-50df79607db4/493c81e4343bdc9df162a6672fca6b22.jpg'), _t('Vampiric Embrace',1,_d+'ae119016-40e8-40e3-8374-2f5494e561d4/679f15fcf1096af13b4157af46007f40.jpg'), _t('Imp. Vampiric Embrace',2,_d+'4c966a6e-2d65-4162-8b34-47406e8aba74/d4a409edcb0d6e6468bc93a2f32d0cd2.jpg'), _t('Focused Mind',3,_v+'cf69e3a4-1ef9-4b1a-aa7c-83f04dab31e3/6860af2b0a4d4c30ec65c06964b2019d.jpg')],
+                    // Row 6 (25 req)
+                    [_t('Shadow Resilience',2,_v+'00fc644f-cb1b-4503-ab06-ba1113d4c315/ac3deccfedb9cff4996daeb85550f3aa.jpg'), null, _t('Darkness',5,_d+'0a33ab45-348c-452b-a49c-20efe42078c0/a013092f715b04daee22ff1d530c229b.jpg'), null],
+                    // Row 7 (30 req)
+                    [null, _t('Shadowform',1,_d+'df37622d-7b28-4b01-b04c-34f050794ddd/8f8d981596737eb6b2d8b05c722029ab.jpg'), _t('Shadow Power',5,_v+'c2f9305d-cedc-429c-a740-b355be56ae48/5b1cbce68f7f635090883522d19007e4.jpg'), null],
+                    // Row 8 (35 req)
+                    [null, null, _t('Misery',5,_v+'0928cb01-55db-45db-8116-304b6fb3efb4/5ecd182c7d743c246eb1f6cfe5d8ce4c.jpg'), null],
+                    // Row 9 (40 req)
+                    [null, _t('Vampiric Touch',1,_v+'bc11baae-f487-4c0c-a799-852587f229b2/e293cd4f3474bc684f2a55b7006e855e.jpg'), null, null]
+                ],
+                // Vampiric Embrace -> Vampiric Touch (confirmed TBC prereq)
+                arrows: [[4,1,8,1]]
             }
         };
 
-        // Per-talent point allocations per build
-        // disc[i], holy[i], shadow[i] = points in talent slot i (0-indexed)
-        // Standard: exact (decoded from wowhead URL 500230013--503250510240103051451)
-        // Shadow Nova / PvP: best estimates until user provides URLs
+        // Allocations: flat arrays in grid reading order (L->R, T->B, skipping nulls)
+        // Standard exact from wowhead URL 500230013--503250510240103051451
+        // disc=22 entries (22 non-null cells), holy/shadow=21 entries each
         var TBC_ALLOCS = {
             standard: {
-                disc:   [5,0,0,2,3,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                disc:   [5,0,0,2,3,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 holy:   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 shadow: [5,0,3,2,5,0,5,1,0,2,4,0,1,0,3,0,5,1,4,5,1]
             },
             shadownova: {
-                // Adds Imp Psychic Scream + Silence, drops Shadow Reach + 1 Shadow Weaving
-                disc:   [5,0,0,2,3,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                disc:   [5,0,0,2,3,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 holy:   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 shadow: [5,0,3,2,5,2,5,1,0,0,3,1,1,0,3,0,5,1,4,5,1]
             },
             pvp: {
-                // 21 Disc / 0 Holy / 40 Shadow (estimate)
-                disc:   [5,0,0,2,3,2,0,1,3,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                disc:   [5,0,0,2,3,2,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 holy:   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 shadow: [5,0,3,2,5,0,5,1,0,0,4,0,1,0,0,0,5,1,2,5,1]
             }
@@ -590,31 +562,71 @@
         function renderTbcTree(tree, alloc) {
             var data = TBC_TREES[tree];
             var grid = document.getElementById('tt-grid-' + tree);
-            if (!grid) return;
-            var pts = 0;
-            var html = '';
-            data.talents.forEach(function(t, i) {
-                var name = t[0], maxRank = t[1], iconUrl = t[2];
-                // empty placeholder cell
-                if (!iconUrl) {
-                    html += '<div class="tt-cell tt-empty"><div style="width:100%;aspect-ratio:1/1"></div></div>';
-                    return;
-                }
-                var spent = alloc[i] || 0;
-                pts += spent;
-                var state = spent === 0 ? 'tt-inactive' : (spent >= maxRank ? 'tt-active' : 'tt-partial');
-                var badge = spent + '/' + maxRank;
-                html += '<div class="tt-wrap"><div class="tt-cell ' + state + '">'
-                    + '<img src="' + iconUrl + '" alt="' + name + '" loading="lazy">'
-                    + '<div class="tt-border"></div>'
-                    + '<div class="tt-badge">' + badge + '</div>'
-                    + '</div>'
-                    + '<div class="tt-tip">' + name + '<br><span style="color:#888;font-size:.65rem;">' + badge + ' pts</span></div>'
-                    + '</div>';
+            if (!grid || !data) return;
+            var html = '', allocIdx = 0, totalPts = 0;
+            data.grid.forEach(function(row) {
+                row.forEach(function(cell) {
+                    if (!cell) {
+                        html += '<div class="tt-cell tt-empty"></div>';
+                        return;
+                    }
+                    var name = cell[0], maxRank = cell[1], iconUrl = cell[2];
+                    var spent = (alloc && allocIdx < alloc.length) ? (alloc[allocIdx] || 0) : 0;
+                    allocIdx++;
+                    totalPts += spent;
+                    var state = spent === 0 ? 'tt-inactive' : (spent >= maxRank ? 'tt-active' : 'tt-partial');
+                    var badge = spent + '/' + maxRank;
+                    html += '<div class="tt-cell ' + state + '">'
+                        + '<img src="' + iconUrl + '" alt="" loading="lazy">'
+                        + '<div class="tt-border"></div>'
+                        + '<div class="tt-badge">' + badge + '</div>'
+                        + '<div class="tt-tip">' + name + '<br><span style="color:#888;font-size:.65rem;">' + badge + ' pts</span></div>'
+                        + '</div>';
+                });
             });
             grid.innerHTML = html;
             var ptsEl = document.getElementById('tt-pts-' + tree);
-            if (ptsEl) ptsEl.textContent = pts + ' pts';
+            if (ptsEl) ptsEl.textContent = totalPts + ' pts';
+            requestAnimationFrame(function() { renderArrows(tree); });
+        }
+
+        function renderArrows(tree) {
+            var data = TBC_TREES[tree];
+            var svg  = document.getElementById('tt-svg-' + tree);
+            var grid = document.getElementById('tt-grid-' + tree);
+            if (!svg || !grid || !data.arrows || !data.arrows.length) return;
+            var gRect = grid.getBoundingClientRect();
+            if (!gRect.width) return;
+            var cells = grid.children;  // 36 direct children (9 rows x 4 cols)
+            var svgContent = '<defs>'
+                + '<marker id="ah-' + tree + '" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">'
+                + '<path d="M0,0 L6,3 L0,6 Z" fill="rgba(180,140,255,0.75)"/>'
+                + '</marker></defs>';
+            data.arrows.forEach(function(arr) {
+                var fr = arr[0], fc = arr[1], tr = arr[2], tc = arr[3];
+                var fromEl = cells[fr * 4 + fc];
+                var toEl   = cells[tr * 4 + tc];
+                if (!fromEl || !toEl) return;
+                var fR = fromEl.getBoundingClientRect();
+                var tR = toEl.getBoundingClientRect();
+                var sx = fR.left - gRect.left + fR.width  / 2;
+                var sy = fR.top  - gRect.top  + fR.height + 1;
+                var ex = tR.left - gRect.left + tR.width  / 2;
+                var ey = tR.top  - gRect.top  - 1;
+                var d;
+                if (Math.abs(sx - ex) < 2) {
+                    // Straight vertical -- offset x slightly to avoid overlapping intervening cells
+                    var ox = sx + fR.width * 0.38;
+                    d = 'M' + ox + ',' + sy + ' L' + ox + ',' + ey;
+                } else {
+                    // L-shape: down to midpoint, across, then down
+                    var mid = sy + (ey - sy) * 0.45;
+                    d = 'M' + sx + ',' + sy + ' L' + sx + ',' + mid + ' L' + ex + ',' + mid + ' L' + ex + ',' + ey;
+                }
+                svgContent += '<path d="' + d + '" fill="none" stroke="rgba(180,140,255,0.65)" stroke-width="1.5"'
+                    + ' stroke-dasharray="3,2" marker-end="url(#ah-' + tree + ')"/>';
+            });
+            svg.innerHTML = svgContent;
         }
 
         function renderTbcTrees(build) {
