@@ -54,13 +54,13 @@
             color: #c77dff;
         }
         /* ── TBC Talent Tree Visual ── */
-        .tbc-talent-tree{display:flex;gap:10px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px}
-        .tbc-tree-panel{flex:1;min-width:0;border-radius:10px;padding:10px 8px}
+        .tbc-talent-tree{display:flex;gap:10px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;justify-content:center}
+        .tbc-tree-panel{flex:0 0 auto;border-radius:10px;padding:10px 8px}
         .tbc-tree-panel.disc{background:rgba(168,218,220,.07);border:1px solid rgba(168,218,220,.3)}
         .tbc-tree-panel.holy{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2)}
         .tbc-tree-panel.shadow{background:rgba(199,125,255,.07);border:1px solid rgba(199,125,255,.3)}
         .tbc-tree-header{text-align:center;margin-bottom:8px;font-weight:700;font-size:.8rem;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
-        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,36px);gap:3px}
         .tt-cell{position:relative;border-radius:3px;overflow:visible;line-height:0;aspect-ratio:1/1;cursor:default}
         .tt-cell img{width:100%;display:block;border-radius:3px;transition:filter .2s}
         .tt-cell .tt-border{position:absolute;inset:0;border-radius:3px;pointer-events:none;z-index:1;border:1px solid rgba(255,255,255,.1)}
@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.3</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.4</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -495,8 +495,8 @@
                     // Row 9 (40 req)
                     [null, _t('Pain Suppression',1,_v+'24460350-f1c1-4e01-8fc0-dd77463d1b31/32ac880af4ffa4b2acb87d44159e4432.jpg'), null, null]
                 ],
-                // [fromRow,fromCol,toRow,toCol] -- Divine Spirit -> Power Infusion
-                arrows: [[4,2,6,1]]
+                // [fromRow,fromCol,toRow,toCol] -- Mental Strength -> Power Infusion
+                arrows: [[4,1,6,1]]
             },
             holy: {
                 grid: [
@@ -599,8 +599,8 @@
             if (!gRect.width) return;
             var cells = grid.children;  // 36 direct children (9 rows x 4 cols)
             var svgContent = '<defs>'
-                + '<marker id="ah-' + tree + '" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">'
-                + '<path d="M0,0 L6,3 L0,6 Z" fill="rgba(180,140,255,0.75)"/>'
+                + '<marker id="ah-' + tree + '" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">'
+                + '<path d="M0,0 L8,4 L0,8 Z" fill="rgba(180,140,255,0.9)"/>'
                 + '</marker></defs>';
             data.arrows.forEach(function(arr) {
                 var fr = arr[0], fc = arr[1], tr = arr[2], tc = arr[3];
@@ -623,8 +623,8 @@
                     var mid = sy + (ey - sy) * 0.45;
                     d = 'M' + sx + ',' + sy + ' L' + sx + ',' + mid + ' L' + ex + ',' + mid + ' L' + ex + ',' + ey;
                 }
-                svgContent += '<path d="' + d + '" fill="none" stroke="rgba(180,140,255,0.65)" stroke-width="1.5"'
-                    + ' stroke-dasharray="3,2" marker-end="url(#ah-' + tree + ')"/>';
+                svgContent += '<path d="' + d + '" fill="none" stroke="rgba(180,140,255,0.75)" stroke-width="3"'
+                    + ' stroke-dasharray="4,3" marker-end="url(#ah-' + tree + ')"/>';
             });
             svg.innerHTML = svgContent;
         }
