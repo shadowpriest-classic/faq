@@ -60,7 +60,7 @@
         .tbc-tree-panel.holy{background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2)}
         .tbc-tree-panel.shadow{background:rgba(199,125,255,.07);border:1px solid rgba(199,125,255,.3)}
         .tbc-tree-header{text-align:center;margin-bottom:8px;font-weight:700;font-size:.8rem;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
-        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,36px);gap:3px}
+        .tbc-tree-grid{display:grid;grid-template-columns:repeat(4,36px);gap:5px}
         .tt-cell{position:relative;border-radius:3px;overflow:visible;line-height:0;aspect-ratio:1/1;cursor:default}
         .tt-cell img{width:100%;display:block;border-radius:3px;transition:filter .2s}
         .tt-cell .tt-border{position:absolute;inset:0;border-radius:3px;pointer-events:none;z-index:1;border:1px solid rgba(255,255,255,.1)}
@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.4</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.5</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -457,6 +457,13 @@
                 history.replaceState(null, '', '#' + tabId);
                 activateTab(tabId);
                 setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 100);
+                // Re-draw talent tree arrows once the tab is visible
+                if (tabId === 'talents') {
+                    setTimeout(function() {
+                        var activeBuild = document.querySelector('.tbc-build-btn.active');
+                        renderTbcTrees(activeBuild ? activeBuild.getAttribute('data-build') : 'standard');
+                    }, 80);
+                }
             });
         });
 
@@ -596,11 +603,11 @@
             var grid = document.getElementById('tt-grid-' + tree);
             if (!svg || !grid || !data.arrows || !data.arrows.length) return;
             var gRect = grid.getBoundingClientRect();
-            if (!gRect.width) return;
+            if (!gRect.width) return;  // tab not yet visible; will re-draw on tab open
             var cells = grid.children;  // 36 direct children (9 rows x 4 cols)
             var svgContent = '<defs>'
-                + '<marker id="ah-' + tree + '" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">'
-                + '<path d="M0,0 L8,4 L0,8 Z" fill="rgba(180,140,255,0.9)"/>'
+                + '<marker id="ah-' + tree + '" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">'
+                + '<path d="M0,0 L6,3 L0,6 Z" fill="rgba(180,140,255,0.9)"/>'
                 + '</marker></defs>';
             data.arrows.forEach(function(arr) {
                 var fr = arr[0], fc = arr[1], tr = arr[2], tc = arr[3];
