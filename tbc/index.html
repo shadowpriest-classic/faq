@@ -125,7 +125,7 @@
                 <div style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
                 <h2 class="card-title" style="font-size: 1.8rem; margin-bottom: 16px; display:flex; align-items:baseline; justify-content:center; gap:12px;">
                     Work in Progress
-                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.7</span>
+                    <span id="tbc-version" style="font-size:0.72rem; font-weight:400; color:#444; letter-spacing:0.05em; flex-shrink:0;">v1.8</span>
                 </h2>
                 <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
                     The TBC Shadow Priest guide is currently being built. Check back soon, content will be added as development progresses.
@@ -617,6 +617,8 @@
             var gRect = grid.getBoundingClientRect();
             if (!gRect.width) return;  // tab not yet visible; will re-draw on tab open
             var cells = grid.children;
+            // Arrowhead geometry: height AH, half-width AW (colored), AWb (black border slightly larger)
+            var AH = 8, AW = 5, AWb = 7;
             var blackPaths = '', colorPaths = '';
             data.arrows.forEach(function(arr) {
                 var fr = arr[0], fc = arr[1], tr = arr[2], tc = arr[3];
@@ -625,42 +627,46 @@
                 if (!fromEl || !toEl) return;
                 var fR = fromEl.getBoundingClientRect();
                 var tR = toEl.getBoundingClientRect();
-                var sx, sy, ex, ey, d;
+                var dLine, dHeadB, dHeadC;
                 if (fc === tc) {
-                    // Same column: straight vertical
-                    sx = fR.left - gRect.left + fR.width / 2;
-                    sy = fR.bottom - gRect.top;
-                    ex = tR.left - gRect.left + tR.width / 2;
-                    ey = tR.top - gRect.top;
-                    d = 'M'+sx+','+sy+' L'+ex+','+ey;
+                    // Straight vertical (downward)
+                    var sx = fR.left - gRect.left + fR.width / 2;
+                    var sy = fR.bottom - gRect.top;
+                    var ex = tR.left - gRect.left + tR.width / 2;
+                    var ey = tR.top - gRect.top;
+                    dLine  = 'M'+sx+','+sy+' L'+ex+','+(ey-AH);
+                    dHeadB = 'M'+(ex-AWb)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AWb)+','+(ey-AH)+' Z';
+                    dHeadC = 'M'+(ex-AW)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AW)+','+(ey-AH)+' Z';
                 } else if (fr === tr) {
-                    // Same row: straight horizontal
-                    sx = fR.right - gRect.left;
-                    sy = fR.top - gRect.top + fR.height / 2;
-                    ex = tR.left - gRect.left;
-                    ey = tR.top - gRect.top + tR.height / 2;
-                    d = 'M'+sx+','+sy+' L'+ex+','+ey;
+                    // Straight horizontal (rightward)
+                    var sx = fR.right - gRect.left;
+                    var sy = fR.top - gRect.top + fR.height / 2;
+                    var ex = tR.left - gRect.left;
+                    var ey = sy;
+                    dLine  = 'M'+sx+','+sy+' L'+(ex-AH)+','+ey;
+                    dHeadB = 'M'+(ex-AH)+','+(ey-AWb)+' L'+ex+','+ey+' L'+(ex-AH)+','+(ey+AWb)+' Z';
+                    dHeadC = 'M'+(ex-AH)+','+(ey-AW)+' L'+ex+','+ey+' L'+(ex-AH)+','+(ey+AW)+' Z';
                 } else {
-                    // L-shape: down then across
-                    sx = fR.left - gRect.left + fR.width / 2;
-                    sy = fR.bottom - gRect.top;
-                    ex = tR.left - gRect.left + tR.width / 2;
-                    ey = tR.top - gRect.top;
+                    // L-shape (last segment vertical, arrowhead points down)
+                    var sx = fR.left - gRect.left + fR.width / 2;
+                    var sy = fR.bottom - gRect.top;
+                    var ex = tR.left - gRect.left + tR.width / 2;
+                    var ey = tR.top - gRect.top;
                     var mid = (sy + ey) / 2;
-                    d = 'M'+sx+','+sy+' L'+sx+','+mid+' L'+ex+','+mid+' L'+ex+','+ey;
+                    dLine  = 'M'+sx+','+sy+' L'+sx+','+mid+' L'+ex+','+mid+' L'+ex+','+(ey-AH);
+                    dHeadB = 'M'+(ex-AWb)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AWb)+','+(ey-AH)+' Z';
+                    dHeadC = 'M'+(ex-AW)+','+(ey-AH)+' L'+ex+','+ey+' L'+(ex+AW)+','+(ey-AH)+' Z';
                 }
-                // Black border layer (drawn first, underneath)
-                blackPaths += '<path d="'+d+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="7"'
+                // All black borders first (underneath everything)
+                blackPaths += '<path d="'+dLine+'" fill="none" stroke="rgba(0,0,0,0.9)" stroke-width="7"'
                     + ' stroke-linecap="round" stroke-linejoin="round"/>';
-                // Colored layer on top, with arrowhead
-                colorPaths += '<path d="'+d+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="4.5"'
-                    + ' stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-'+tree+')"/>';
+                blackPaths += '<path d="'+dHeadB+'" fill="rgba(0,0,0,0.9)"/>';
+                // All colored on top
+                colorPaths += '<path d="'+dLine+'" fill="none" stroke="rgba(180,140,255,0.95)" stroke-width="4.5"'
+                    + ' stroke-linecap="round" stroke-linejoin="round"/>';
+                colorPaths += '<path d="'+dHeadC+'" fill="rgba(180,140,255,0.95)"/>';
             });
-            svg.innerHTML = '<defs><marker id="ah-'+tree+'" markerWidth="5" markerHeight="5"'
-                + ' refX="5" refY="2.5" orient="auto">'
-                + '<path d="M0,0 L5,2.5 L0,5 Z" fill="rgba(180,140,255,0.95)"/>'
-                + '</marker></defs>'
-                + blackPaths + colorPaths;
+            svg.innerHTML = blackPaths + colorPaths;
         }
 
         function renderTbcTrees(build) {
